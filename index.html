@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>RJN Cua Vineyards · Wage Dashboard</title>
+<style>
+:root{
+  --wine:#6B2737; --wine9:#3F1620; --wine5:#8B3A4A; --vine:#3A4A2C; --vine5:#5E7544;
+  --gold:#A8792C; --gold4:#C9A24B; --bg:#F3ECDF; --card:#FFFFFF;
+  --ink:#2A2420; --ink6:#6E6256; --ink4:#9A8E7E; --line:#E4D8C4;
+  --cPull:#5E7544; --cCut75:#8B3A4A; --cCut65:#C9A24B; --cRoll:#7A4A6B;
+  --footbg:#FBF4E6; --footink:#3F1620; --hover:#F3ECDF;
+  --shadow:0 1px 3px rgba(60,40,20,.05); --scrim:rgba(40,25,20,.45);
+}
+html[data-theme=dark]{
+  --wine:#7E3142; --wine9:#4C1A24; --wine5:#9E4855; --vine:#48592F; --vine5:#6E8654;
+  --gold:#D9B95F; --gold4:#E6C871; --bg:#171210; --card:#221B1C;
+  --ink:#F2E9DB; --ink6:#B6A793; --ink4:#897B6A; --line:#36292A;
+  --cPull:#7E9858; --cCut75:#C65A6E; --cCut65:#E6C871; --cRoll:#A77399;
+  --footbg:#2B2125; --footink:#F2E9DB; --hover:#2C2224;
+  --shadow:0 1px 3px rgba(0,0,0,.4); --scrim:rgba(8,4,4,.66);
+}
+html[data-theme=dark] body{background:radial-gradient(1100px 460px at 50% -130px,#2A1016 0,var(--bg) 62%)}
+body,.filters,.kpi,.panel,.tablepanel,.pill,select,input,.mbox,.reset{transition:background-color .25s,color .25s,border-color .25s}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 50px}
+/* header */
+header{background:linear-gradient(100deg,var(--wine9),var(--wine));color:#fff;padding:22px 0 0}
+.hd{max-width:1180px;margin:0 auto;padding:0 18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+.hd .ttl{font-size:26px;font-weight:700}
+.hd .sub{font-size:12px;color:#E9C9CF;letter-spacing:.08em;margin-top:2px}
+.hd .grand{text-align:right}
+.hd .grand .lab{font-size:11px;color:#E9C9CF;letter-spacing:.1em}
+.hd .grand .v{font-size:34px;font-weight:700;color:var(--gold4);line-height:1}
+.goldbar{height:4px;background:var(--gold4);margin-top:18px}
+/* filter bar */
+.filters{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:18px 0;display:flex;gap:18px;flex-wrap:wrap;align-items:center;box-shadow:var(--shadow)}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg .k{font-size:10.5px;color:var(--ink6);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink6);font-size:12.5px;font-weight:600;cursor:pointer;transition:.12s;user-select:none}
+.pill:hover{border-color:var(--gold4)}
+.pill.on{background:var(--wine);color:#fff;border-color:var(--wine)}
+select,input{font-family:inherit;font-size:13px;padding:7px 11px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);outline:none}
+select:focus,input:focus{border-color:var(--gold)}
+input{min-width:150px}
+.reset{margin-left:auto;align-self:flex-end;background:none;border:1px solid var(--line);color:var(--ink6);padding:7px 13px;border-radius:9px;cursor:pointer;font-size:12.5px}
+.reset:hover{border-color:var(--wine);color:var(--wine)}
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.kpi .l{font-size:11px;color:var(--ink6);font-weight:600}
+.kpi .v{font-size:25px;font-weight:700;color:var(--gold);margin-top:4px;font-family:'Playfair Display',serif}
+.kpi .m{font-size:11px;color:var(--ink4);margin-top:2px}
+/* panels */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+.panel h3{font-size:14px;color:var(--wine);font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 .mini{font-size:11px;color:var(--ink4);font-weight:400}
+/* donut */
+.donutwrap{display:flex;align-items:center;gap:18px}
+.donut{position:relative;width:170px;height:170px;flex:none}
+.donut .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut .ctr .v{font-size:20px;font-weight:700;color:var(--ink);font-family:'Playfair Display',serif}
+.donut .ctr .l{font-size:10px;color:var(--ink4)}
+.legend{flex:1;display:flex;flex-direction:column;gap:8px}
+.legend .it{display:flex;align-items:center;gap:9px;font-size:12.5px;cursor:pointer;padding:3px 5px;border-radius:7px}
+.legend .it:hover{background:var(--hover)}
+.legend .sw{width:12px;height:12px;border-radius:3px;flex:none}
+.legend .nm{flex:1}
+.legend .vv{font-weight:600;font-variant-numeric:tabular-nums}
+.legend .pc{color:var(--ink4);font-size:11px;min-width:38px;text-align:right}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:90px 1fr 78px;align-items:center;gap:9px;font-size:12.5px;cursor:pointer}
+.bar:hover .track .fill{filter:brightness(1.08)}
+.bar .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.bar .track{background:var(--bg);border-radius:6px;height:20px;overflow:hidden}
+.bar .fill{height:100%;border-radius:6px;transition:width .35s ease}
+.bar .vv{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:var(--gold)}
+/* table */
+.tablepanel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 4px 10px;box-shadow:var(--shadow);overflow:hidden}
+.tbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
+.tbar h3{font-size:14px;color:var(--wine);font-weight:600}
+.tbar .cnt{font-size:12px;color:var(--ink4)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 16px;text-align:right;white-space:nowrap}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+thead th{background:var(--wine);color:#fff;font-weight:600;font-size:11.5px;cursor:pointer;user-select:none;position:sticky;top:0}
+thead th:hover{background:var(--wine5)}
+thead th .ar{opacity:.5;font-size:10px}
+tbody tr{border-bottom:1px solid var(--line);cursor:pointer}
+tbody tr:hover{background:var(--hover)}
+tbody td.id{font-weight:700}
+tbody td.tot{font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+tbody td.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink4)}
+tfoot td{background:var(--footbg);font-weight:700;color:var(--footink);border-top:2px solid var(--gold4)}
+/* drill modal */
+.modal{position:fixed;inset:0;background:var(--scrim);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.mbox{background:var(--card);border-radius:16px;max-width:680px;width:100%;max-height:85vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.mhd{position:sticky;top:0;background:var(--wine);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.mhd .x{cursor:pointer;font-size:22px;line-height:1;opacity:.85}
+.mhd .x:hover{opacity:1}
+.mbody{padding:14px 20px 22px}
+.mbody table th{background:var(--vine)}
+.note{font-size:11.5px;color:var(--ink4);text-align:center;margin-top:18px}
+header .hd{padding-right:118px}
+.themebtn,.langbtn{position:fixed;top:13px;z-index:60;border:1px solid rgba(255,255,255,.4);background:rgba(63,22,32,.5);color:#fff;cursor:pointer;line-height:1;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:.15s}
+.themebtn{right:16px;width:40px;height:40px;border-radius:50%;font-size:18px}
+.langbtn{right:62px;height:40px;padding:0 14px;border-radius:20px;font-size:13px;font-weight:600}
+.themebtn:hover,.langbtn:hover{background:rgba(63,22,32,.82)}
+.themebtn:hover{transform:scale(1.07)}
+html[data-theme=dark] .themebtn,html[data-theme=dark] .langbtn{background:rgba(230,200,113,.15);border-color:rgba(230,200,113,.5)}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.bar{grid-template-columns:80px 1fr 70px}}
+/* 手机 / 老人友好 */
+@media(max-width:560px){
+  body{font-size:15px}
+  .wrap{padding:0 12px 40px}
+  header .hd{padding-right:108px}
+  .hd .ttl{font-size:21px}
+  .hd .grand .v{font-size:28px}
+  .filters{gap:12px;padding:13px 14px}
+  .pill{padding:9px 15px;font-size:14px}
+  select,input{font-size:15px;padding:10px 12px;min-width:130px}
+  .reset{padding:9px 15px;font-size:14px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:12px 13px}
+  .kpi .v{font-size:23px}
+  .kpi .l{font-size:12px}
+  .donutwrap{flex-direction:column;align-items:center;gap:14px}
+  .legend{width:100%}
+  .panel h3{font-size:15px}
+  .legend .it{padding:7px 5px;font-size:14px}
+  .bar{font-size:13.5px;grid-template-columns:84px 1fr 76px}
+  /* 工资表手机版：只留 工号/姓名/合计(大字)，细列隐藏，点一行看全部明细 */
+  /* 工资表→卡片:每人一块,合计金色大字,老人一眼看到钱 */
+  #wtable,#wtable tbody,#wtable tfoot,#wtable tr,#wtable td{display:block;width:auto}
+  #wtable thead{display:none}
+  #wtable tr{padding:11px 15px;border-bottom:1px solid var(--line)}
+  #wtable td{padding:0;text-align:left;white-space:normal;border:none;font-size:15px}
+  #wtable td:not(.mob){display:none}
+  #wtable tbody td.id{display:inline;font-size:16px;font-weight:700;color:var(--ink)}
+  #wtable tbody td.id::after{content:" · "}
+  #wtable tbody td.mob:nth-child(2){display:inline;font-size:15px;color:var(--ink6)}
+  #wtable tbody td.tot{display:block;font-size:21px;color:var(--gold);font-weight:700;margin-top:2px}
+  #wtable tfoot tr{background:var(--footbg);border-top:2px solid var(--gold4)}
+  #wtable tfoot td.mob{display:inline;font-weight:700;font-size:15px}
+  #wtable tfoot td.mob:nth-child(9){display:block;font-size:20px;color:var(--gold);margin-top:2px}
+  .tbar h3{font-size:16px}
+  .note{font-size:12px}
+}
+</style>
+<script>try{var _t=localStorage.getItem('rjn_theme');if(_t)document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
+</head>
+<body>
+<button class="langbtn" id="langbtn">EN</button>
+<button class="themebtn" id="themebtn">🌙</button>
+<header>
+  <div class="hd">
+    <div>
+      <div class="ttl serif">RJN Cua Vineyards</div>
+      <div class="sub" data-i18n="sub">工资仪表盘 · WAGE DASHBOARD</div>
+    </div>
+    <div class="grand">
+      <div class="lab" data-i18n="grandLab">当前筛选合计 TOTAL</div>
+      <div class="v" id="grand">$0</div>
+    </div>
+  </div>
+  <div class="goldbar"></div>
+</header>
+
+<div class="wrap">
+  <div class="filters">
+    <div class="fg">
+      <span class="k" data-i18n="fCat">类别 / 工序</span>
+      <div class="pills" id="catPills"></div>
+    </div>
+    <div class="fg">
+      <span class="k" data-i18n="fPatch">地块 Patch</span>
+      <select id="patchSel"></select>
+    </div>
+    <div class="fg">
+      <span class="k" data-i18n="fDate">日期 / 周</span>
+      <select id="dateSel"></select>
+    </div>
+    <div class="fg">
+      <span class="k" data-i18n="fSearch">搜工人（工号/姓名）</span>
+      <input id="search" data-i18n-ph="searchPh" placeholder="例如 200 或 Toey">
+    </div>
+    <button class="reset" id="reset" data-i18n="reset">重置</button>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3><span data-i18n="pCat">工资按类别</span> <span class="mini" data-i18n="miniLegend">点图例可筛选</span></h3>
+      <div class="donutwrap">
+        <div class="donut"><svg id="donut" viewBox="0 0 42 42"></svg>
+          <div class="ctr"><div class="v" id="dCtr">$0</div><div class="l" data-i18n="donutCtr">合计</div></div></div>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3 data-i18n="pPatch">工资按地块 Patch</h3>
+      <div class="bars" id="patchBars"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <h3><span data-i18n="pTop">Top 工人（按工资）</span><span class="mini" data-i18n="miniDrill">点条形钻取明细</span></h3>
+    <div class="bars" id="workerBars"></div>
+  </div>
+
+  <div class="tablepanel">
+    <div class="tbar"><h3 data-i18n="pTable">工人工资表</h3><span class="cnt" id="tcnt"></span></div>
+    <div style="overflow:auto"><table id="wtable">
+      <thead><tr>
+        <th data-k="w" data-i18n="thW" class="mob">工号</th><th data-k="n" data-i18n="thN" class="mob">姓名</th>
+        <th data-k="Pulling" class="num">Pulling</th>
+        <th data-k="Cutting $0.75" class="num">Cut $0.75</th>
+        <th data-k="Cutting $0.65" class="num">Cut $0.65</th>
+        <th data-k="Rolling" class="num">Rolling</th>
+        <th data-k="rows" class="num" data-i18n="thRows">行数</th>
+        <th data-k="vines" class="num" data-i18n="thVines">藤数</th>
+        <th data-k="total" class="num mob" data-i18n="thTotal">合计</th>
+        <th data-k="pct" class="num" data-i18n="thPct">占比</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot"></tfoot>
+    </table></div>
+  </div>
+
+  <div class="note" id="note"></div>
+</div>
+
+<div class="modal" id="modal"><div class="mbox">
+  <div class="mhd"><div id="mtitle"></div><div class="x" onclick="closeModal()">&times;</div></div>
+  <div class="mbody" id="mbody"></div>
+</div></div>
+
+<script>
+const DATA = [{"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 1, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 2, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 3, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 4, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 5, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 6, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 7, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 8, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 9, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 10, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 11, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 12, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 13, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 14, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 15, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 16, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 17, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 18, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 19, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 20, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 21, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 22, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 23, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 24, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 25, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 26, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 27, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 28, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 29, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 30, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 31, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 32, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 33, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 34, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 35, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 36, "v": 78, "wg": 58.5, "d": "2026-06-15"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 37, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 38, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 39, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 40, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 41, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 42, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 43, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 44, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 45, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 46, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 47, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 48, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 49, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 50, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 51, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 52, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 53, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 54, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 11", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 55, "v": 78, "wg": 58.5, "d": "2026-06-16"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 56, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 57, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 58, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 59, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 60, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 61, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 62, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 63, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 64, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 65, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 66, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 67, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 68, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 69, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 70, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 71, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 72, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 73, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 74, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 75, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 76, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 77, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 78, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 79, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 80, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 81, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 82, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 83, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 84, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 85, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 86, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 87, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 88, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 89, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 90, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 91, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 92, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 93, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 94, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 95, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 96, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 97, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 98, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 99, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 100, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 101, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 102, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 103, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 104, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 105, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 106, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 107, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 108, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 14", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 109, "v": 78, "wg": 58.5, "d": "2026-06-18"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 203, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 204, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 205, "v": 46.5, "wg": 34.875, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 205, "v": 46.5, "wg": 34.875, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 206, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 207, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 208, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 209, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 210, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 211, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 212, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 213, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 214, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 215, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 216, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 217, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 218, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 219, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 220, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 221, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 222, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 223, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 224, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 225, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 226, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 227, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 228, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 229, "v": 93, "wg": 69.75, "d": "2026-06-19"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "222", "n": "KeXXXX", "row": 101, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 102, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "106", "n": "ReXXXX", "row": 103, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 104, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 105, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 106, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 107, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 108, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 109, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 110, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 111, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 112, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 113, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "222", "n": "KeXXXX", "row": 114, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 115, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 116, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 117, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 118, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 119, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "106", "n": "ReXXXX", "row": 120, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 121, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 122, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 123, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "222", "n": "KeXXXX", "row": 124, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 125, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 126, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 127, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 128, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 129, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 130, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 131, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 132, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "222", "n": "KeXXXX", "row": 133, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 134, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "106", "n": "ReXXXX", "row": 135, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 136, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 137, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 138, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 139, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 140, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "8", "n": "CeXXXX", "row": 141, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "222", "n": "KeXXXX", "row": 142, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 143, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 144, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "9", "n": "JuXXXX", "row": 145, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "182", "n": "SiXXXX", "row": 146, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "221", "n": "SeXXXX", "row": 147, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "117", "n": "HoXXXX", "row": 148, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 33 Sweet Globe", "op": "Cutting", "cat": "Cutting $0.65", "r": 0.65, "w": "200", "n": "ToXXXX", "row": 149, "v": 93, "wg": 60.45, "d": "2026-06-15"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 553, "v": 65, "wg": 48.75, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 554, "v": 69, "wg": 51.75, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 555, "v": 62, "wg": 46.5, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 556, "v": 63, "wg": 47.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 558, "v": 63, "wg": 47.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 559, "v": 63, "wg": 47.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 560, "v": 48, "wg": 36.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 561, "v": 55, "wg": 41.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "237", "n": "MeXXXX", "row": 562, "v": 52, "wg": 39.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "106", "n": "ReXXXX", "row": 563, "v": 52, "wg": 39.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "108", "n": "FiXXXX", "row": 564, "v": 50, "wg": 37.5, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 565, "v": 47, "wg": 35.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 566, "v": 45, "wg": 33.75, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 567, "v": 43, "wg": 32.25, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "200", "n": "ToXXXX", "row": 568, "v": 32, "wg": 24.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 569, "v": 40, "wg": 30.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "8", "n": "CeXXXX", "row": 570, "v": 40, "wg": 30.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "9", "n": "JuXXXX", "row": 571, "v": 37, "wg": 27.75, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 572, "v": 32, "wg": 24.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "237", "n": "MeXXXX", "row": 573, "v": 26, "wg": 19.5, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 574, "v": 26, "wg": 19.5, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "222", "n": "KeXXXX", "row": 575, "v": 20, "wg": 15.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "117", "n": "HoXXXX", "row": 576, "v": 20, "wg": 15.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "221", "n": "SeXXXX", "row": 577, "v": 20, "wg": 15.0, "d": "2026-06-09"}, {"p": "Patch 26 (Sweet Magic)", "op": "Cutting", "cat": "Cutting $0.75", "r": 0.75, "w": "182", "n": "SiXXXX", "row": 578, "v": 11, "wg": 8.25, "d": "2026-06-09"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 101, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "248", "n": "HoXXXX", "row": 102, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 103, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Do", "n": "DoXXXX", "row": 104, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "242", "n": "PaXXXX", "row": 105, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "343", "n": "JuXXXX", "row": 106, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 107, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "305", "n": "ZaXXXX", "row": 108, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 109, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 110, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 111, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 112, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "343", "n": "JuXXXX", "row": 113, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Do", "n": "DoXXXX", "row": 114, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "242", "n": "PaXXXX", "row": 115, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "248", "n": "HoXXXX", "row": 116, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 117, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "305", "n": "ZaXXXX", "row": 118, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 119, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 120, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 121, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "343", "n": "JuXXXX", "row": 122, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 123, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Do", "n": "DoXXXX", "row": 124, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "248", "n": "HoXXXX", "row": 125, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "242", "n": "PaXXXX", "row": 126, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "305", "n": "ZaXXXX", "row": 127, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 128, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 129, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 130, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 131, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Do", "n": "DoXXXX", "row": 132, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "248", "n": "HoXXXX", "row": 133, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "343", "n": "JuXXXX", "row": 134, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 135, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 136, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 137, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "242", "n": "PaXXXX", "row": 138, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 139, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "305", "n": "ZaXXXX", "row": 140, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Ron", "n": "RoXXXX", "row": 141, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "AB", "n": "—", "row": 142, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "343", "n": "JuXXXX", "row": 143, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "248", "n": "HoXXXX", "row": 144, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "263", "n": "LyXXXX", "row": 145, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "Do", "n": "DoXXXX", "row": 146, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "018", "n": "ViXXXX", "row": 147, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "242", "n": "PaXXXX", "row": 148, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 33 Sweet Globe", "op": "Pulling", "cat": "Pulling", "r": 0.5, "w": "305", "n": "ZaXXXX", "row": 149, "v": 93, "wg": 46.5, "d": "2026-06-16"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 56, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 57, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 60, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 61, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 62, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 63, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 65, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 66, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 67, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 69, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 70, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 71, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 73, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 74, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 75, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 76, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 78, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 80, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 81, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 83, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 84, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 86, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 87, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 88, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 89, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 90, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 91, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 93, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 94, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 96, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 97, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 98, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 99, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 100, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 102, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 103, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 104, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 105, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 14", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 106, "v": 78, "wg": 50.7, "d": "2026-06-19"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 204, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 205, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 206, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 207, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 208, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 209, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 212, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 213, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 215, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 216, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 217, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 218, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 220, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 221, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 222, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 224, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 225, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 226, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 228, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 20", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 229, "v": 93, "wg": 60.45, "d": "2026-06-22"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 1, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 2, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 3, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 4, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 7, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 8, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 9, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 10, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 12, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 13, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 14, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 15, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 16, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 18, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 19, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 21, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 22, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 23, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 24, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 26, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 27, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 29, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 30, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 31, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 32, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 33, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 34, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 36, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 37, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 39, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 40, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 41, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 43, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 44, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 45, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 46, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "018", "n": "ViXXXX", "row": 47, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "AB", "n": "—", "row": 49, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "305", "n": "ZaXXXX", "row": 51, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "263", "n": "LyXXXX", "row": 52, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "248", "n": "HoXXXX", "row": 53, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "242", "n": "PaXXXX", "row": 54, "v": 78, "wg": 50.7, "d": "2026-06-18"}, {"p": "Patch 11", "op": "Pulling", "cat": "Pulling", "r": 0.65, "w": "343", "n": "JuXXXX", "row": 55, "v": 78, "wg": 50.7, "d": "2026-06-18"}];
+const CATS = ["Pulling","Cutting $0.75","Cutting $0.65","Rolling"];
+const CATC = {"Pulling":"var(--cPull)","Cutting $0.75":"var(--cCut75)","Cutting $0.65":"var(--cCut65)","Rolling":"var(--cRoll)"};
+
+const I18N = {
+  zh:{ sub:"工资仪表盘 · WAGE DASHBOARD", grandLab:"当前筛选合计 TOTAL",
+    fCat:"类别 / 工序", fPatch:"地块 Patch", fDate:"日期 / 周", fSearch:"搜工人（工号/姓名）", searchPh:"例如 200 或 Toey", reset:"重置",
+    pCat:"工资按类别", miniLegend:"点图例可筛选", donutCtr:"合计", pPatch:"工资按地块 Patch", pTop:"Top 工人（按工资）", miniDrill:"点条形钻取明细", pTable:"工人工资表",
+    thW:"工号", thN:"姓名", thRows:"行数", thVines:"藤数", thTotal:"合计", thPct:"占比",
+    kTotalWage:"总工资", kTotalWageS:"当前筛选", kWorkers:"工人数", kWorkersS:"人", kVines:"总藤数", kVinesS:"各工序累计", kRecords:"记录数", kRecordsS:"条 / 行", kAvg:"人均", kAvgS:"每人",
+    noData:"无数据", tfTotal:"合计", unitPpl:"人", recs:"条记录",
+    dId:"工号", dTotal:"合计", dhPatch:"地块", dhCat:"类别", dhRows:"行数", dhVines:"藤数", dhWage:"工资", dDetail:"逐行明细", dhRow:"行号", dhVine:"藤", dhRate:"单价", dhDate:"日期",
+    allCat:"全部", allPatch:"全部地块", allDate:"全部日期",
+    note:function(n){return "数据来自 RJN_Cua_Vineyards_Master.xlsx（Work Log）· 共 "+n+" 条记录 · 此页为只读交互视图 🍇";} },
+  en:{ sub:"Wage Dashboard · Interactive", grandLab:"FILTERED TOTAL",
+    fCat:"Category / Operation", fPatch:"Patch", fDate:"Date / Week", fSearch:"Search worker (ID / name)", searchPh:"e.g. 200 or Toey", reset:"Reset",
+    pCat:"Wage by Category", miniLegend:"click legend to filter", donutCtr:"Total", pPatch:"Wage by Patch", pTop:"Top Workers (by wage)", miniDrill:"click bar to drill in", pTable:"Worker Payroll",
+    thW:"Worker ID", thN:"Name", thRows:"Rows", thVines:"Vines", thTotal:"Total", thPct:"%",
+    kTotalWage:"Total Wage", kTotalWageS:"current filter", kWorkers:"Workers", kWorkersS:"people", kVines:"Total Vines", kVinesS:"all operations", kRecords:"Records", kRecordsS:"rows", kAvg:"Avg / Worker", kAvgS:"each",
+    noData:"No data", tfTotal:"Total", unitPpl:"workers", recs:"records",
+    dId:"ID", dTotal:"total", dhPatch:"Patch", dhCat:"Category", dhRows:"Rows", dhVines:"Vines", dhWage:"Wage", dDetail:"Row detail", dhRow:"Row", dhVine:"Vines", dhRate:"Rate", dhDate:"Date",
+    allCat:"All", allPatch:"All patches", allDate:"All dates",
+    note:function(n){return "Data from RJN_Cua_Vineyards_Master.xlsx (Work Log) · "+n+" records · read-only interactive view 🍇";} }
+};
+let LANG = (function(){try{return localStorage.getItem('rjn_lang')||'zh'}catch(e){return 'zh'}})();
+function t(k){return I18N[LANG][k];}
+
+const fmt = n => "$"+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = n => Math.round(n).toLocaleString('en-US');
+let F = {cat:"all", patch:"all", date:"all", search:""};
+let SORT = {k:"total", dir:-1};
+
+function filtered(){
+  const q=F.search.trim().toLowerCase();
+  return DATA.filter(r=>
+    (F.cat==="all"||r.cat===F.cat) &&
+    (F.patch==="all"||r.p===F.patch) &&
+    (F.date==="all"||r.d===F.date) &&
+    (!q || r.w.toLowerCase().includes(q) || r.n.toLowerCase().includes(q))
+  );
+}
+function groupBy(rows,key){const m={};for(const r of rows){(m[r[key]]=m[r[key]]||[]).push(r);}return m;}
+function sum(rows,f){return rows.reduce((a,r)=>a+(f?f(r):r.wg),0);}
+
+function workerAgg(rows){
+  const byW=groupBy(rows,"w"); const out=[];
+  for(const w in byW){const rs=byW[w];const o={w,n:rs[0].n,rows:rs.length,vines:sum(rs,r=>r.v),total:sum(rs)};
+    for(const c of CATS)o[c]=sum(rs.filter(r=>r.cat===c)); out.push(o);}
+  return out;
+}
+
+function render(){
+  const rows=filtered(), G=sum(rows);
+  document.getElementById('grand').textContent=fmt(G);
+  document.getElementById('dCtr').textContent=fmt(G);
+  // KPIs
+  const nw=new Set(rows.map(r=>r.w)).size, nv=sum(rows,r=>r.v), avg=nw?G/nw:0;
+  const kp=[[t('kTotalWage'),fmt(G),t('kTotalWageS')],[t('kWorkers'),nw,t('kWorkersS')],[t('kVines'),fmt0(nv),t('kVinesS')],[t('kRecords'),rows.length,t('kRecordsS')],[t('kAvg'),fmt(avg),t('kAvgS')]];
+  document.getElementById('kpis').innerHTML=kp.map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="m">${k[2]}</div></div>`).join('');
+  // donut by category
+  const catTot=CATS.map(c=>({c,v:sum(rows.filter(r=>r.cat===c))})).filter(x=>x.v>0);
+  let off=0, segs="";
+  for(const s of catTot){const pct=G?s.v/G*100:0;
+    segs+=`<circle class="seg" data-cat="${s.c}" cx="21" cy="21" r="15.9155" fill="transparent" stroke="${CATC[s.c]}" stroke-width="6" stroke-dasharray="${pct.toFixed(2)} ${(100-pct).toFixed(2)}" stroke-dashoffset="${(25-off).toFixed(2)}"></circle>`;
+    off+=pct;}
+  document.getElementById('donut').innerHTML=`<circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="var(--line)" stroke-width="6"></circle>${segs}`;
+  document.getElementById('legend').innerHTML=catTot.map(s=>{const pct=G?s.v/G*100:0;
+    return `<div class="it" data-cat="${s.c}"><span class="sw" style="background:${CATC[s.c]}"></span><span class="nm">${s.c}</span><span class="vv">${fmt(s.v)}</span><span class="pc">${pct.toFixed(1)}%</span></div>`;}).join('')||`<div class="muted">${t('noData')}</div>`;
+  document.querySelectorAll('#legend .it').forEach(el=>el.onclick=()=>{F.cat=(F.cat===el.dataset.cat)?"all":el.dataset.cat;syncCat();render();});
+  // patch bars
+  const byP=groupBy(rows,"p"); const parr=Object.keys(byP).map(p=>({p,v:sum(byP[p])})).sort((a,b)=>b.v-a.v);
+  const pmax=Math.max(1,...parr.map(x=>x.v));
+  document.getElementById('patchBars').innerHTML=parr.map(x=>`<div class="bar" data-patch="${x.p}"><span class="nm">${x.p}</span><span class="track"><span class="fill" style="width:${x.v/pmax*100}%;background:var(--vine5)"></span></span><span class="vv">${fmt(x.v)}</span></div>`).join('')||`<div class="muted">${t('noData')}</div>`;
+  document.querySelectorAll('#patchBars .bar').forEach(el=>el.onclick=()=>{F.patch=(F.patch===el.dataset.patch)?"all":el.dataset.patch;document.getElementById('patchSel').value=F.patch;render();});
+  // worker bars (top 12)
+  const wa=workerAgg(rows).sort((a,b)=>b.total-a.total);
+  const top=wa.slice(0,12), wmax=Math.max(1,...top.map(x=>x.total));
+  document.getElementById('workerBars').innerHTML=top.map(x=>`<div class="bar" data-w="${x.w}"><span class="nm">${x.n} <span class="muted">${x.w}</span></span><span class="track"><span class="fill" style="width:${x.total/wmax*100}%;background:linear-gradient(90deg,var(--wine5),var(--gold))"></span></span><span class="vv">${fmt(x.total)}</span></div>`).join('')||`<div class="muted">${t('noData')}</div>`;
+  document.querySelectorAll('#workerBars .bar').forEach(el=>el.onclick=()=>drill(el.dataset.w));
+  // table
+  wa.sort((a,b)=>{let x=a[SORT.k],y=b[SORT.k]; if(typeof x==="string"){x=x.toLowerCase();y=(y||"").toLowerCase();return x<y?-SORT.dir:x>y?SORT.dir:0;} return (x-y)*SORT.dir;});
+  const tb=document.getElementById('tbody');
+  tb.innerHTML=wa.map(o=>{const pct=G?o.total/G*100:0;
+    return `<tr data-w="${o.w}"><td class="id mob">${o.w}</td><td class="mob">${o.n}</td>
+      <td class="num">${o.Pulling?fmt(o.Pulling):'<span class="muted">–</span>'}</td>
+      <td class="num">${o["Cutting $0.75"]?fmt(o["Cutting $0.75"]):'<span class="muted">–</span>'}</td>
+      <td class="num">${o["Cutting $0.65"]?fmt(o["Cutting $0.65"]):'<span class="muted">–</span>'}</td>
+      <td class="num">${o.Rolling?fmt(o.Rolling):'<span class="muted">–</span>'}</td>
+      <td class="num">${o.rows}</td><td class="num">${fmt0(o.vines)}</td>
+      <td class="tot mob">${fmt(o.total)}</td><td class="num muted">${pct.toFixed(1)}%</td></tr>`;}).join('');
+  tb.querySelectorAll('tr').forEach(tr=>tr.onclick=()=>drill(tr.dataset.w));
+  document.getElementById('tfoot').innerHTML=`<tr><td class="mob">${t('tfTotal')}</td><td class="mob">${wa.length} ${t('unitPpl')}</td>
+    <td class="num">${fmt(sum(rows.filter(r=>r.cat==='Pulling')))}</td>
+    <td class="num">${fmt(sum(rows.filter(r=>r.cat==='Cutting $0.75')))}</td>
+    <td class="num">${fmt(sum(rows.filter(r=>r.cat==='Cutting $0.65')))}</td>
+    <td class="num">${fmt(sum(rows.filter(r=>r.cat==='Rolling')))}</td>
+    <td class="num">${rows.length}</td><td class="num">${fmt0(sum(rows,r=>r.v))}</td>
+    <td class="num mob">${fmt(G)}</td><td class="num">100%</td></tr>`;
+  document.getElementById('tcnt').textContent=wa.length+" "+t('unitPpl')+" · "+rows.length+" "+t('recs');
+  // header sort arrows
+  document.querySelectorAll('#wtable thead th').forEach(th=>{th.querySelector('.ar')&&th.querySelector('.ar').remove();
+    if(th.dataset.k===SORT.k)th.insertAdjacentHTML('beforeend',` <span class="ar">${SORT.dir<0?'▾':'▴'}</span>`);});
+}
+
+function drill(w){
+  const rows=filtered().filter(r=>r.w===w).sort((a,b)=>a.p<b.p?-1:a.p>b.p?1:a.row-b.row);
+  if(!rows.length)return;
+  const n=rows[0].n, tot=sum(rows);
+  document.getElementById('mtitle').innerHTML=`<b>${n}</b> <span style="opacity:.8">${t('dId')} ${w}</span> · ${t('dTotal')} ${fmt(tot)}`;
+  // per-sheet summary
+  const byPO={};for(const r of rows){const k=r.p+'|'+r.cat;(byPO[k]=byPO[k]||[]).push(r);}
+  let s=`<table style="margin-bottom:14px"><thead><tr><th>${t('dhPatch')}</th><th>${t('dhCat')}</th><th style="text-align:right">${t('dhRows')}</th><th style="text-align:right">${t('dhVines')}</th><th style="text-align:right">${t('dhWage')}</th></tr></thead><tbody>`;
+  Object.keys(byPO).sort().forEach(k=>{const rs=byPO[k];s+=`<tr><td>${rs[0].p}</td><td>${rs[0].cat}</td><td style="text-align:right">${rs.length}</td><td style="text-align:right">${fmt0(sum(rs,r=>r.v))}</td><td style="text-align:right;font-weight:600;color:var(--gold)">${fmt(sum(rs))}</td></tr>`;});
+  s+=`</tbody></table><div style="font-size:11px;color:var(--ink4);margin-bottom:6px">${t('dDetail')} · ${rows.length}</div>`;
+  s+=`<table><thead><tr><th>${t('dhPatch')}</th><th>${t('dhCat')}</th><th style="text-align:right">${t('dhRow')}</th><th style="text-align:right">${t('dhVine')}</th><th style="text-align:right">${t('dhRate')}</th><th style="text-align:right">${t('dhWage')}</th><th>${t('dhDate')}</th></tr></thead><tbody>`;
+  rows.forEach(r=>{s+=`<tr><td>${r.p}</td><td>${r.cat}</td><td style="text-align:right">${r.row}</td><td style="text-align:right">${r.v}</td><td style="text-align:right">$${r.r.toFixed(2)}</td><td style="text-align:right;font-weight:600">${fmt(r.wg)}</td><td class="muted">${r.d}</td></tr>`;});
+  s+=`</tbody></table>`;
+  document.getElementById('mbody').innerHTML=s;
+  document.getElementById('modal').classList.add('on');
+}
+function closeModal(){document.getElementById('modal').classList.remove('on');}
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function syncCat(){document.querySelectorAll('#catPills .pill').forEach(p=>p.classList.toggle('on',p.dataset.cat===F.cat));}
+
+function applyLang(lang){
+  LANG=lang; document.documentElement.setAttribute('lang',lang);
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  var lb=document.getElementById('langbtn'); lb.textContent=lang==='zh'?'EN':'中';
+  // "all" labels in controls
+  var ap=document.querySelector('#catPills .pill[data-cat="all"]'); if(ap)ap.textContent=t('allCat');
+  var ps=document.getElementById('patchSel'); if(ps.options[0])ps.options[0].textContent=t('allPatch');
+  var dx=document.getElementById('dateSel'); if(dx.options[0])dx.options[0].textContent=t('allDate');
+  document.getElementById('note').textContent=t('note')(DATA.length);
+  try{localStorage.setItem('rjn_lang',lang)}catch(e){}
+  render();
+}
+
+function init(){
+  // cat pills
+  document.getElementById('catPills').innerHTML=['all',...CATS].map(c=>`<span class="pill${c==='all'?' on':''}" data-cat="${c}">${c==='all'?t('allCat'):c}</span>`).join('');
+  document.querySelectorAll('#catPills .pill').forEach(p=>p.onclick=()=>{F.cat=p.dataset.cat;syncCat();render();});
+  // patch select
+  const ps=[...new Set(DATA.map(r=>r.p))].sort();
+  document.getElementById('patchSel').innerHTML=`<option value="all">${t('allPatch')}</option>`+ps.map(p=>`<option value="${p}">${p}</option>`).join('');
+  document.getElementById('patchSel').onchange=e=>{F.patch=e.target.value;render();};
+  // date select
+  const ds=[...new Set(DATA.map(r=>r.d))].sort();
+  document.getElementById('dateSel').innerHTML=`<option value="all">${t('allDate')}</option>`+ds.map(d=>`<option value="${d}">${d}</option>`).join('');
+  document.getElementById('dateSel').onchange=e=>{F.date=e.target.value;render();};
+  // search
+  document.getElementById('search').oninput=e=>{F.search=e.target.value;render();};
+  // reset
+  document.getElementById('reset').onclick=()=>{F={cat:"all",patch:"all",date:"all",search:""};document.getElementById('patchSel').value="all";document.getElementById('dateSel').value="all";document.getElementById('search').value="";syncCat();render();};
+  // sort
+  document.querySelectorAll('#wtable thead th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if(SORT.k===k)SORT.dir*=-1;else{SORT.k=k;SORT.dir=(k==='w'||k==='n')?1:-1;}render();});
+  applyLang(LANG);
+}
+const TKEY='rjn_theme';
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);var b=document.getElementById('themebtn');if(b)b.textContent=t==='dark'?'☀️':'🌙';}
+applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light');
+document.getElementById('themebtn').addEventListener('click',function(){var cur=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';var nx=cur==='dark'?'light':'dark';applyTheme(nx);try{localStorage.setItem(TKEY,nx)}catch(e){}});
+document.getElementById('langbtn').addEventListener('click',function(){applyLang(LANG==='zh'?'en':'zh');});
+init();
+</script>
+</body>
+</html>
